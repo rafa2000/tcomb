@@ -1,10 +1,17 @@
 {
   "name": "tcomb",
-  "version": "0.5.0",
-  "description": "Pragmatic runtime type checking for JavaScript",
+  "version": "2.7.0",
+  "description": "Type checking and DDD for JavaScript",
   "main": "index.js",
+  "typings": "index.d.ts",
+  "files": [
+    "index.js",
+    "lib",
+    "index.d.ts"
+  ],
   "scripts": {
-    "cover": "istanbul cover _mocha -- --ui bdd -R dot"
+    "lint": "eslint index.js lib test",
+    "test": "npm run lint && mocha"
   },
   "repository": {
     "type": "git",
@@ -17,34 +24,33 @@
   },
   "homepage": "https://github.com/gcanti/tcomb",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-cli": "^0.1.13",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "^0.5.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-test": "^0.11.0",
-    "istanbul": "^0.3.0",
-    "jshint-stylish": "^0.4.0",
-    "mocha": "^1.21.4"
+    "eslint": "^1.10.3",
+    "mocha": "^2.3.4"
   },
   "tags": [
     "type",
     "combinators",
     "checking",
     "safety",
-    "models",
+    "model",
     "domain",
     "debugging",
-    "immutable"
+    "immutable",
+    "DDD",
+    "JSON",
+    "store"
   ],
   "keywords": [
     "type",
     "combinators",
     "checking",
     "safety",
-    "models",
+    "model",
     "domain",
     "debugging",
-    "immutable"
+    "immutable",
+    "DDD",
+    "JSON",
+    "store"
   ]
 }

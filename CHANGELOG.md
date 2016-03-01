@@ -1,147 +1,169 @@
-# v0.5.0
+# Changelog
 
-- changed default name for `func` combinator
-- changed default name for `list` combinator
-- `t.update` is now overridable
+> **Tags:**
+> - [New Feature]
+> - [Bug Fix]
+> - [Breaking Change]
+> - [Documentation]
+> - [Internal]
+> - [Polish]
+> - [Experimental]
 
-**BREAKING**
+**Note**: Gaps between patch versions are faulty/broken releases.
+**Note**: A feature tagged as Experimental is in a high state of flux, you're at risk of it changing without notice.
 
-- moved `fail` to `assert.fail`
-- removed `options.onFail`, override `assert.fail` instead
-- removed `getKind`
-- removed `util` namespace
-- renamed `getName` to `getTypeName`
+# v2.7.0
 
-# v0.4.0
+- **New Feature**
+  - `lib/fromJSON` module: generic deserialize, fix #169
+  - `lib/fromJSON` TypeScript definition file
+- **Bug Fix**
+  - t.update module: $apply doesn't play well with dates and regexps, fix #172
+  - t.update: cannot $merge and $remove at once, fix #170 (thanks @grahamlyus)
+  - TypeScript: fix Exported external package typings file '...' is not a module
+  - misleading error message in `Struct.extend` functions, fix #177 (thanks @Firfi)
 
-**BREAKING**
+# v2.6.0
 
-- `t.irreducible` instead of `t.irriducible`, fix #77
-- Prevent illegal type definitions and make easy type analysis, fix #78
-- change default name for unnamed types, fix #79
+- **New Feature**
+  - `declare` API: recursive and mutually recursive types (thanks @utaal)
+  - typescript definition file, fix #160 (thanks @DanielRosenwasser)
+  - `t.struct.extend`, fix #164 (thanks @dzdrazil)
+- **Internal**
+  - split main file to separate modules, fix #158
+  - add "typings" field to package.json (TypeScript)
+  - add `predicate` field to irreducibles meta objects
+- **Documentation**
+  - revamp [docs/API.md](docs/API.md)
+  - add ["A little guide to runtime type checking and runtime type introspection"](docs/GUIDE.md) (WIP)
 
-# v0.3.6
+## v2.5.2
 
-- tuple, list and dicts don't freeze values if they are irriducibles, fix #76
+- **Bug Fix**
+  - remove the assert checking if the type returned by a union dispatch function is correct (was causing issues with unions of unions or unions of intersections)
 
-# v0.3.5
+## v2.5.1
 
-- Add $merge command, fix #74
+- **Internal**
+  - `t.update` should not change the reference when no changes occur, fix #153
 
-# v0.3.4
+# v2.5.0
 
-- Struct.extend(): prototypal inheritance added
+- **New Feature**
+  - check if the type returned by a union dispatch function is correct, fix #136 (thanks @fcracker79)
+  - added `refinement` alias to `subtype` (which is deprecated), fix #140
+- **Internal**
+  - optimisations: for identity types return early in production, fix #135 (thanks @fcracker79)
+  - exposed `getDefaultName` on combinator constructors
 
-# v0.3.3
+## v2.4.1
 
-- add `displayName` to combinators, fix #69
+- **New Feature**
+  - added struct multiple inheritance, fix #143
 
-# v0.3.2
+# v2.4.0
 
-- removed `util.merge`
-- $set and null value, fix #65
+- **New Feature**
+  - unions
+    - added `update` function, #127
+    - the default `dispatch` implementation now handles unions of unions, #126
+    - show the offended union type in error messages
 
-# v0.3.1
+# v2.3.0
 
-- Make `Struct.extend` accept array of extensions
+- **New Feature**
+  - Add support for lazy messages in asserts, fix #124
+  - Better error messages for assert failures, fix #120
 
-# v0.3.0
+  The messages now have the following general form:
 
-- added `Struct.extend(props, [name])`, fix #55
-- added built-in immutable updates, fix #31
+  ```
+  Invalid value <value> supplied to <context>
+  ```
 
-**BREAKING**
+  where context is a slash-separated string with the following properties:
 
-- change `dict(B)` combinator to `dict(A, B)` where A is the set of keys, fix #54
-- removed `util.isKind`
-- removed `util.isType`, use `Type.is` instead
-- refactoring of `func`. Now is a proper type combinator. fix #42
-- removed `options.update`
+  - the first element is the name of the "root"
+  - the following elements have the form: `<field name>: <field type>`
 
-# v0.2.1
+  Note: for more readable messages remember to give types a name
 
-- `func` doesn't preserve `this`, fix #38
-- added and exported `Type` type
-- better error messages and DEBUG HINTS
-- optimized `mixin(x, y)` when y is Nil
-- added `util.merge(objects...)`, fix #39
+  Example:
 
-**DEPRECATED**
+  ```js
+  var Person = t.struct({
+    name: t.String
+  }, 'Person'); // <- remember to give types a name
 
-- `isKind` function is now deprecated
+  var User = t.struct({
+    email: t.String,
+    profile: Person
+  }, 'User');
 
-# v0.2.0
+  var mynumber = t.Number('a');
+  // => Invalid value "a" supplied to Number
 
-- add `isKind, getKind` functions, fix #29
-- add to `struct` an assert on `props` argument, fix #30
-- add sweet.js macros for all combinators, fix #32
-- add a `defaultDispatch` function to `union` combinator, fix #33
-- add overloading to `func`, fix #35
+  var myuser = User({ email: 1 });
+  // => Invalid value 1 supplied to User/email: String
 
-**BREAKING**
+  myuser = User({ email: 'email', profile: { name: 2 } });
+  // => Invalid value 2 supplied to User/profile: Person/name: String
+  ```
 
-- now the kind of Any and all primitives is 'irriducible' fix #34
-- uniform `Any` and primitives, export `irriducible` function, fix #34
-- group all util functions in a `util` namespace, fix #36
 
-# v0.1.0
+## v2.2.1
 
-- added `Dict(A)` combinator, for dictionaries, fix #21
+- **Experimental**
+  - pattern matching #121
 
-# v0.0.12
+# v2.2.0
 
-- more verbose error messages, fix #25
-- list#is() depends on `this`, fix #27
-- tuple#is() depends on `this`, fix #28
+- **New Feature**
+  - added `intersection` combinator fix #111
 
-**BREAKING**
+    **Example**
 
-- `enums.of()` should generate values equals to keys, fix #23
+    ```js
+    const Min = t.subtype(t.String, function (s) { return s.length > 2; }, 'Min');
+    const Max = t.subtype(t.String, function (s) { return s.length < 5; }, 'Max');
+    const MinMax = t.intersection([Min, Max], 'MinMax');
 
-# v0.0.11
+    MinMax.is('abc'); // => true
+    MinMax.is('a'); // => false
+    MinMax.is('abcde'); // => false
+    ```
 
-- forbid the use of `new` for all types but structs, fix #8
-- make maybe combinator idempotent, fix #9
-- make maybe(T) really idempotent
-- make list(T) really idempotent, fix #11
-- make struct(T) really idempotent, fix #12
-- make tuple(Ts) really idempotent, fix #13
-- make union(Ts) really idempotent, fix #14
-- export fail(), fix #15
-- more tests on Dat primitive type, fix #18
-- create constants for string messages, fix #16
-- more tests on Re primitive type, fix #17
-- make func() idempotent, fix #19
-- relaxed `Obj.is()` to accept more object types
-- turn off jshint newcap
-- remove `freeze()` function
+- **Internal**
+  - optimised the generation of default names for types
 
-**BREAKING**
+# v2.1.0
 
-- forbid the use of `new` for all types but structs, for which is optional, fix #7
+- **New Feature**
+  - added aliases for pre-defined irreducible types fix #112
+  - added overridable `stringify` function to handle error messages and improve performances in development (replaces the experimental `options.verbose`)
 
-# v0.0.10
+## v2.0.1
 
-- add `Dat` primitive type, fix #4
-- add `Re` primitive type, fix #3
-- reach 100% test coverage
-- jshint says: No problems
-- add `options` to configuring tcomb fix #5 :
-- decouple onFail implementation from assert(), fix #6
-- add `Any` type, fix #2
-- fix #1
+- **Experimental**
+  - added `options.verbose` (default `true`) to handle messages (set `options.verbose = false` to improve performances in development)
 
-**BREAKING**
+# v2.0.0
 
-- removed `assert.onFail`, now override `options.onFail`
-- removed all update methods, now define `options.update`
-- rename `print` to `format`, implement like `util.format` in Node, fix #7
-
-Releases
-========
-
-# v0.0.9
-
-- grunt build system
-- split source files
-- 70% test coverage
+- **New Feature**
+  - add support to types defined as ES6 classes #99
+  - optimized for production code: asserts and freeze only in development mode
+  - add `is(x, type)` function
+  - add `isType(x)` function
+  - add `stringify(x)` function
+- **Breaking change**
+  - numeric types on enums #93  (thanks @m0x72)
+  - remove asserts when process.env.NODE_ENV === 'production' #100
+  - do not freeze if process.env.NODE_ENV === 'production' #103
+  - func without currying #96 (thanks @tmcw)
+  - remove useless exports #104
+  - drop bower support #101
+  - remove useless exports
+    * Type
+    * slice
+    * shallowCopy
+    * getFunctionName

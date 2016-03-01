@@ -1,8 +1,4 @@
 .*
 *.log
-bower.json
-Gruntfile.js
 node_modules
 test
-docs
-dev
